@@ -56,7 +56,7 @@ Option | Type | Default | Purpose
 ------ | ---- | ------- | -------
 maxRecords | Integer | 10,000 | The number of records to scan when inferring the schema. The data source will keep scanning until either the maximum number of records have been reached or there are no more files to scan.
 pivotFields | Boolean | false | Scans for field pairs in the format of `key=value keyLabel=OtherKey` and pivots the data to `OtherKey=value`.
-defensiveMode | Boolean | false | Used if a feed is known to violate the CEF spec. Adds overhead to the parsing so only use when the there are known violations.
+defensiveMode | Boolean | false | Used if a feed is known to violate the CEF spec. Adds overhead to the parsing so only use when there are known violations.
 nullValue | String | `-` | A value used in the CEF records which should be parsed as a `null` value.
 mode | ParseMode | Permissive | Permitted values are "permissive" and "failfast". When used in `FailFast` mode the parser will throw an error on the first record exception found. When used in `Permissive` mode it will attempt to parse as much of the record as possible, with `null` values used for all other values. `Permissive` mode may be used in combination with the `corruptRecordColumnName` option.
 corruptRecordColumnName | String | `null` | When used with `Permissive` mode the full record is stored in a column with the name provided. If null is provided then the full record is discarded. By providing a name the data source will append a column to the infered schema.
