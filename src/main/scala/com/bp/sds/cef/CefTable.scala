@@ -41,9 +41,16 @@ private[cef] class CefTable(
   override def newScanBuilder(options: CaseInsensitiveStringMap): ScanBuilder =
     CefScanBuilder(sparkSession, fileIndex, schema, dataSchema, options)
 
-  override def newWriteBuilder(info: LogicalWriteInfo): WriteBuilder = throw new RuntimeException("No write support")
+  override def newWriteBuilder(info: LogicalWriteInfo): WriteBuilder =
+    CefOutputWriterBuilder(paths, formatName, supportsDataType, info)
 
   override def name(): String = name
 
   override def fallbackFileFormat: Class[_ <: FileFormat] = classOf[CefFileSource]
 }
+
+
+
+
+
+

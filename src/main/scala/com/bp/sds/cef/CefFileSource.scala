@@ -2,10 +2,10 @@ package com.bp.sds.cef
 
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.{FileStatus, Path}
-import org.apache.hadoop.mapreduce.Job
+import org.apache.hadoop.mapreduce.{Job, TaskAttemptContext}
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.catalyst.InternalRow
-import org.apache.spark.sql.execution.datasources.{OutputWriterFactory, PartitionedFile, TextBasedFileFormat}
+import org.apache.spark.sql.execution.datasources.{CodecStreams, OutputWriter, OutputWriterFactory, PartitionedFile, TextBasedFileFormat}
 import org.apache.spark.sql.sources.{DataSourceRegister, Filter}
 import org.apache.spark.sql.types.StructType
 import org.apache.spark.util.SerializableConfiguration
@@ -34,7 +34,8 @@ private[cef] class CefFileSource extends TextBasedFileFormat with DataSourceRegi
     }
   }
 
-  override def prepareWrite(sparkSession: SparkSession, job: Job, options: Map[String, String], dataSchema: StructType): OutputWriterFactory = throw new RuntimeException("No write support")
+  override def prepareWrite(sparkSession: SparkSession, job: Job, options: Map[String, String], dataSchema: StructType): OutputWriterFactory =
+    new CefOutputWriterFactory(options)
 }
 
 
