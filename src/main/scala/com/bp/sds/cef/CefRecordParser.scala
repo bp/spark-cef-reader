@@ -90,7 +90,7 @@ private[cef] class CefRecordParser(options: CefParserOptions) extends Logging {
       rowData += (f.name -> null)
     )
 
-    val cefSplit = cef.split('|')
+    val cefSplit = cef.split("""(?<!\\)\|""", 8)
 
     try {
       rowData("CEFVersion") = UTF8String.fromString(cefSplit(0))

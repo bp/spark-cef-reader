@@ -348,6 +348,18 @@ class CefDataSourceTests extends AnyFlatSpec with Matchers with BeforeAndAfterAl
     df.filter($"test".isNull).count() should be(1)
   }
 
+  it should "correctly handle multiple pipes in the record, and escaped pipes in the header" in {
+    val sourceFile = ResourceFileUtils.getFilePath("/cef-records/header-pipes-tests.cef")
+
+    import spark.implicits._
+
+    val df = spark.read
+      .cef(sourceFile)
+
+    df.filter($"Name" === """Invalid \| Data""").count() should be(1)
+    df.filter($"cs1" === "This|is some|test|data").count() should be(3)
+  }
+
   behavior of "Processing files with corrupt records"
 
   it should "capture the corrupt record in passive mode" in {
