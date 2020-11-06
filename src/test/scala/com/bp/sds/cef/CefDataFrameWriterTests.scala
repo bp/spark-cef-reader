@@ -119,6 +119,268 @@ class CefDataFrameWriterTests extends AnyFlatSpec with Matchers with BeforeAndAf
     unsupportedOperationException.count(_.getMessage.endsWith("Mandatory fields cannot contain null values")) should be(1)
   }
 
+  behavior of "Writing a DataFrame with date formats"
+
+  it should "default to writing with year, milliseconds, and timezone" in {
+    val schema = StructType(Array(
+      StructField("CEFVersion", StringType, nullable = true),
+      StructField("DeviceVendor", StringType, nullable = true),
+      StructField("DeviceProduct", StringType, nullable = true),
+      StructField("DeviceVersion", StringType, nullable = true),
+      StructField("SignatureID", StringType, nullable = true),
+      StructField("Name", StringType, nullable = true),
+      StructField("Severity", StringType, nullable = true),
+      StructField("cs1", TimestampType, nullable = true)
+    ))
+
+    val data = Seq(
+      Row("cefversion", "vendor", "product", "version", "sigid", "name", "sev", Timestamp.valueOf("2020-10-15 10:17:31.964"))
+    ).asJava
+
+    val outputPath = s"$outputLocation/timestamps-default.log"
+
+    spark.createDataFrame(data, schema)
+      .write
+      .mode("overwrite")
+      .cef(outputPath)
+
+    val content = getFileContent(outputPath)
+
+    content should be("cefversion|vendor|product|version|sigid|name|sev|cs1=Oct 15 2020 10:17:31.964 UTC")
+  }
+
+  it should "support writing with MMM dd yyyy HH:mm:ss" in {
+    val schema = StructType(Array(
+      StructField("CEFVersion", StringType, nullable = true),
+      StructField("DeviceVendor", StringType, nullable = true),
+      StructField("DeviceProduct", StringType, nullable = true),
+      StructField("DeviceVersion", StringType, nullable = true),
+      StructField("SignatureID", StringType, nullable = true),
+      StructField("Name", StringType, nullable = true),
+      StructField("Severity", StringType, nullable = true),
+      StructField("cs1", TimestampType, nullable = true)
+    ))
+
+    val data = Seq(
+      Row("cefversion", "vendor", "product", "version", "sigid", "name", "sev", Timestamp.valueOf("2020-10-15 10:17:31.964"))
+    ).asJava
+
+    val outputPath = s"$outputLocation/timestamps-default.log"
+
+    spark.createDataFrame(data, schema)
+      .write
+      .mode("overwrite")
+      .option("dateFormat", "MMM dd yyyy HH:mm:ss")
+      .cef(outputPath)
+
+    val content = getFileContent(outputPath)
+
+    content should be("cefversion|vendor|product|version|sigid|name|sev|cs1=Oct 15 2020 10:17:31")
+  }
+
+  it should "support writing with MMM dd yyyy HH:mm:ss.SSS" in {
+    val schema = StructType(Array(
+      StructField("CEFVersion", StringType, nullable = true),
+      StructField("DeviceVendor", StringType, nullable = true),
+      StructField("DeviceProduct", StringType, nullable = true),
+      StructField("DeviceVersion", StringType, nullable = true),
+      StructField("SignatureID", StringType, nullable = true),
+      StructField("Name", StringType, nullable = true),
+      StructField("Severity", StringType, nullable = true),
+      StructField("cs1", TimestampType, nullable = true)
+    ))
+
+    val data = Seq(
+      Row("cefversion", "vendor", "product", "version", "sigid", "name", "sev", Timestamp.valueOf("2020-10-15 10:17:31.964"))
+    ).asJava
+
+    val outputPath = s"$outputLocation/timestamps-default.log"
+
+    spark.createDataFrame(data, schema)
+      .write
+      .mode("overwrite")
+      .option("dateFormat", "MMM dd yyyy HH:mm:ss.SSS")
+      .cef(outputPath)
+
+    val content = getFileContent(outputPath)
+
+    content should be("cefversion|vendor|product|version|sigid|name|sev|cs1=Oct 15 2020 10:17:31.964")
+  }
+
+  it should "support writing with MMM dd yyyy HH:mm:ss zzz" in {
+    val schema = StructType(Array(
+      StructField("CEFVersion", StringType, nullable = true),
+      StructField("DeviceVendor", StringType, nullable = true),
+      StructField("DeviceProduct", StringType, nullable = true),
+      StructField("DeviceVersion", StringType, nullable = true),
+      StructField("SignatureID", StringType, nullable = true),
+      StructField("Name", StringType, nullable = true),
+      StructField("Severity", StringType, nullable = true),
+      StructField("cs1", TimestampType, nullable = true)
+    ))
+
+    val data = Seq(
+      Row("cefversion", "vendor", "product", "version", "sigid", "name", "sev", Timestamp.valueOf("2020-10-15 10:17:31.964"))
+    ).asJava
+
+    val outputPath = s"$outputLocation/timestamps-default.log"
+
+    spark.createDataFrame(data, schema)
+      .write
+      .mode("overwrite")
+      .option("dateFormat", "MMM dd yyyy HH:mm:ss zzz")
+      .cef(outputPath)
+
+    val content = getFileContent(outputPath)
+
+    content should be("cefversion|vendor|product|version|sigid|name|sev|cs1=Oct 15 2020 10:17:31 UTC")
+  }
+
+  it should "support writing with MMM dd HH:mm:ss" in {
+    val schema = StructType(Array(
+      StructField("CEFVersion", StringType, nullable = true),
+      StructField("DeviceVendor", StringType, nullable = true),
+      StructField("DeviceProduct", StringType, nullable = true),
+      StructField("DeviceVersion", StringType, nullable = true),
+      StructField("SignatureID", StringType, nullable = true),
+      StructField("Name", StringType, nullable = true),
+      StructField("Severity", StringType, nullable = true),
+      StructField("cs1", TimestampType, nullable = true)
+    ))
+
+    val data = Seq(
+      Row("cefversion", "vendor", "product", "version", "sigid", "name", "sev", Timestamp.valueOf("2020-10-15 10:17:31.964"))
+    ).asJava
+
+    val outputPath = s"$outputLocation/timestamps-default.log"
+
+    spark.createDataFrame(data, schema)
+      .write
+      .mode("overwrite")
+      .option("dateFormat", "MMM dd HH:mm:ss")
+      .cef(outputPath)
+
+    val content = getFileContent(outputPath)
+
+    content should be("cefversion|vendor|product|version|sigid|name|sev|cs1=Oct 15 10:17:31")
+  }
+
+  it should "support writing with MMM dd HH:mm:ss.SSS zzz" in {
+    val schema = StructType(Array(
+      StructField("CEFVersion", StringType, nullable = true),
+      StructField("DeviceVendor", StringType, nullable = true),
+      StructField("DeviceProduct", StringType, nullable = true),
+      StructField("DeviceVersion", StringType, nullable = true),
+      StructField("SignatureID", StringType, nullable = true),
+      StructField("Name", StringType, nullable = true),
+      StructField("Severity", StringType, nullable = true),
+      StructField("cs1", TimestampType, nullable = true)
+    ))
+
+    val data = Seq(
+      Row("cefversion", "vendor", "product", "version", "sigid", "name", "sev", Timestamp.valueOf("2020-10-15 10:17:31.964"))
+    ).asJava
+
+    val outputPath = s"$outputLocation/timestamps-default.log"
+
+    spark.createDataFrame(data, schema)
+      .write
+      .mode("overwrite")
+      .option("dateFormat", "MMM dd HH:mm:ss.SSS zzz")
+      .cef(outputPath)
+
+    val content = getFileContent(outputPath)
+
+    content should be("cefversion|vendor|product|version|sigid|name|sev|cs1=Oct 15 10:17:31.964 UTC")
+  }
+
+  it should "support writing with MMM dd HH:mm:ss.SSS" in {
+    val schema = StructType(Array(
+      StructField("CEFVersion", StringType, nullable = true),
+      StructField("DeviceVendor", StringType, nullable = true),
+      StructField("DeviceProduct", StringType, nullable = true),
+      StructField("DeviceVersion", StringType, nullable = true),
+      StructField("SignatureID", StringType, nullable = true),
+      StructField("Name", StringType, nullable = true),
+      StructField("Severity", StringType, nullable = true),
+      StructField("cs1", TimestampType, nullable = true)
+    ))
+
+    val data = Seq(
+      Row("cefversion", "vendor", "product", "version", "sigid", "name", "sev", Timestamp.valueOf("2020-10-15 10:17:31.964"))
+    ).asJava
+
+    val outputPath = s"$outputLocation/timestamps-default.log"
+
+    spark.createDataFrame(data, schema)
+      .write
+      .mode("overwrite")
+      .option("dateFormat", "MMM dd HH:mm:ss.SSS")
+      .cef(outputPath)
+
+    val content = getFileContent(outputPath)
+
+    content should be("cefversion|vendor|product|version|sigid|name|sev|cs1=Oct 15 10:17:31.964")
+  }
+
+  it should "support writing with MMM dd HH:mm:ss zzz" in {
+    val schema = StructType(Array(
+      StructField("CEFVersion", StringType, nullable = true),
+      StructField("DeviceVendor", StringType, nullable = true),
+      StructField("DeviceProduct", StringType, nullable = true),
+      StructField("DeviceVersion", StringType, nullable = true),
+      StructField("SignatureID", StringType, nullable = true),
+      StructField("Name", StringType, nullable = true),
+      StructField("Severity", StringType, nullable = true),
+      StructField("cs1", TimestampType, nullable = true)
+    ))
+
+    val data = Seq(
+      Row("cefversion", "vendor", "product", "version", "sigid", "name", "sev", Timestamp.valueOf("2020-10-15 10:17:31.964"))
+    ).asJava
+
+    val outputPath = s"$outputLocation/timestamps-default.log"
+
+    spark.createDataFrame(data, schema)
+      .write
+      .mode("overwrite")
+      .option("dateFormat", "MMM dd HH:mm:ss zzz")
+      .cef(outputPath)
+
+    val content = getFileContent(outputPath)
+
+    content should be("cefversion|vendor|product|version|sigid|name|sev|cs1=Oct 15 10:17:31 UTC")
+  }
+
+  it should "support writing with millis" in {
+    val schema = StructType(Array(
+      StructField("CEFVersion", StringType, nullable = true),
+      StructField("DeviceVendor", StringType, nullable = true),
+      StructField("DeviceProduct", StringType, nullable = true),
+      StructField("DeviceVersion", StringType, nullable = true),
+      StructField("SignatureID", StringType, nullable = true),
+      StructField("Name", StringType, nullable = true),
+      StructField("Severity", StringType, nullable = true),
+      StructField("cs1", TimestampType, nullable = true)
+    ))
+
+    val data = Seq(
+      Row("cefversion", "vendor", "product", "version", "sigid", "name", "sev", Timestamp.valueOf("2020-10-15 10:17:31.964"))
+    ).asJava
+
+    val outputPath = s"$outputLocation/timestamps-default.log"
+
+    spark.createDataFrame(data, schema)
+      .write
+      .mode("overwrite")
+      .option("dateFormat", "millis")
+      .cef(outputPath)
+
+    val content = getFileContent(outputPath)
+
+    content should be("cefversion|vendor|product|version|sigid|name|sev|cs1=1602757051964000")
+  }
+
   behavior of "Writing a DataFrame with valid data"
 
   it should "write a record out to file with mandatory fields in the correct order" in {
@@ -207,6 +469,73 @@ class CefDataFrameWriterTests extends AnyFlatSpec with Matchers with BeforeAndAf
     val content = getFileContent(outputPath)
 
     content should be("""cefversion|vendor|product|version|sigid|name|sev|cs1=Issue from ip\=127.0.0.01 signature\=abc123\=\=""")
+  }
+
+  it should "write a record out to file handling multi-line strings" in {
+    val schema = StructType(Array(
+      StructField("CEFVersion", StringType, nullable = true),
+      StructField("DeviceVendor", StringType, nullable = true),
+      StructField("DeviceProduct", StringType, nullable = true),
+      StructField("DeviceVersion", StringType, nullable = true),
+      StructField("SignatureID", StringType, nullable = true),
+      StructField("Name", StringType, nullable = true),
+      StructField("Severity", StringType, nullable = true),
+      StructField("cs1", StringType, nullable = true)
+    ))
+
+    val data = Seq(
+      Row("cefversion", "vendor", "product", "version", "sigid", "name", "sev",
+        """This
+          |is
+          |a
+          |multiline \ value
+          |
+          |string
+          |which=bad""".stripMargin)
+    ).asJava
+
+    val outputPath = s"$outputLocation/eescaped-symbols.log"
+
+    spark.createDataFrame(data, schema)
+      .write
+      .mode("overwrite")
+      .cef(outputPath)
+
+    val content = getFileContent(outputPath)
+
+    content should be("""cefversion|vendor|product|version|sigid|name|sev|cs1=This\nis\na\nmultiline \\ value\n\nstring\nwhich\=bad""")
+  }
+
+  it should "write a record out to file handling multi-line and pipe values in header strings" in {
+    val schema = StructType(Array(
+      StructField("CEFVersion", StringType, nullable = true),
+      StructField("DeviceVendor", StringType, nullable = true),
+      StructField("DeviceProduct", StringType, nullable = true),
+      StructField("DeviceVersion", StringType, nullable = true),
+      StructField("SignatureID", StringType, nullable = true),
+      StructField("Name", StringType, nullable = true),
+      StructField("Severity", StringType, nullable = true),
+      StructField("cs1", StringType, nullable = true)
+    ))
+
+    val data = Seq(
+      Row("cefversion | id", """vendor \ id""", "product", "version", "sigid", "name",
+        """sev
+          |id
+          |3""".stripMargin,
+        "Value")
+    ).asJava
+
+    val outputPath = s"$outputLocation/eescaped-symbols.log"
+
+    spark.createDataFrame(data, schema)
+      .write
+      .mode("overwrite")
+      .cef(outputPath)
+
+    val content = getFileContent(outputPath)
+
+    content should be("""cefversion \| id|vendor \\ id|product|version|sigid|name|sev id 3|cs1=Value""")
   }
 
   it should "validate mandatory fields regardless of case" in {
