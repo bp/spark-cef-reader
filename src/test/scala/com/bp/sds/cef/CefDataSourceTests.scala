@@ -398,7 +398,6 @@ class CefDataSourceTests extends AnyFlatSpec with Matchers with BeforeAndAfterAl
       .cef(sourceFile)
 
     val error = the[SparkException] thrownBy df.show()
-    println(error.getMessage)
     error.getMessage.contains("org.apache.spark.SparkException: Invalid rows detected") should be(true)
   }
 
