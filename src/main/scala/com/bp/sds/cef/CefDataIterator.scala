@@ -44,17 +44,20 @@ final class CefDataIterator(conf: Configuration, path: Path, dataSchema: StructT
     try {
       parser.parseToInternalRow(line, requiredSchema)
     } catch {
-      case e: BadRecordException => cefOptions.mode match {
-        case PermissiveMode =>
-          e.partialResult() match {
-            case Some(row) => row
-            case None => new GenericInternalRow(requiredSchema.fields.length)
-          }
-        case FailFastMode =>
-          throw new SparkException(
-            s"""Invalid rows detected in ${path.toUri}. Parse mode ${FailFastMode.name}.
-               |To process malformed records as null try setting 'mode' to 'PERMISSIVE'.""".stripMargin)
-      }
+      case e: BadRecordException =>
+        logInfo(s"Invalid record found in file '${path.toUri}': ${e.getMessage}", e)
+        cefOptions.mode match {
+          case PermissiveMode =>
+            e.partialResult() match {
+              case Some(row) => row
+              case None => new GenericInternalRow(requiredSchema.fields.length)
+            }
+          case _ =>
+            logError(s"Failed to read file because of invalid record in file '${path.toUri}': ${e.getMessage}")
+            throw new SparkException(
+              s"""Invalid rows detected in ${path.toUri}. Parse mode ${FailFastMode.name}.
+                 |To process malformed records as null try setting 'mode' to 'PERMISSIVE'.""".stripMargin, e)
+        }
     }
   }
 }
