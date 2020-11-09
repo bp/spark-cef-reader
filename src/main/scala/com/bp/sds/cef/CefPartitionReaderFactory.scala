@@ -1,6 +1,5 @@
 package com.bp.sds.cef
 
-import org.apache.hadoop.fs.Path
 import org.apache.spark.broadcast.Broadcast
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.connector.read.PartitionReader
@@ -19,9 +18,7 @@ private[cef] case class CefPartitionReaderFactory(
                                                    cefOptions: CefParserOptions
                                                  ) extends FilePartitionReaderFactory {
   override def buildReader(partitionedFile: PartitionedFile): PartitionReader[InternalRow] = {
-    val path = new Path(partitionedFile.filePath)
-
-    val iterator = new CefDataIterator(broadcastConf.value.value, path, dataSchema, readDataSchema, cefOptions)
+    val iterator = new CefDataIterator(broadcastConf.value.value, partitionedFile, dataSchema, readDataSchema, cefOptions)
     val reader = new PartitionReaderFromIterator[InternalRow](iterator)
 
     new PartitionReaderWithPartitionValues(reader, readDataSchema, readPartitionSchema, partitionedFile.partitionValues)
