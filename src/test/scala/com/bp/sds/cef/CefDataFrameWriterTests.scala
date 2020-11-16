@@ -93,7 +93,7 @@ class CefDataFrameWriterTests extends AnyFlatSpec with Matchers with BeforeAndAf
     val unsupportedOperationException = getNestedCauses(exception).filter(_.isInstanceOf[UnsupportedOperationException])
 
     unsupportedOperationException.length should be >= 1
-    unsupportedOperationException.count(_.getMessage.endsWith("Row data must contain required CEF fields")) should be(1)
+    unsupportedOperationException.count(_.getMessage.contains("Schema must contain required CEF fields")) should be(1)
   }
 
   behavior of "Writing a DataFrame to CEF"

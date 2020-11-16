@@ -17,15 +17,17 @@ import org.apache.spark.sql.types._
 private[cef] case class CefRecordWriter(dataSchema: StructType, writer: OutputStreamWriter, cefOptions: CefParserOptions) {
   private val lineSeparator = System.lineSeparator()
 
-  private val headerFields = Vector[String](
-    "cefversion",
-    "devicevendor",
-    "deviceproduct",
-    "deviceversion",
-    "signatureid",
-    "name",
-    "severity"
+  private val headerFieldsSchema = Vector(
+    StructField("CEFVersion", StringType, nullable = true),
+    StructField("DeviceVendor", StringType, nullable = true),
+    StructField("DeviceProduct", StringType, nullable = true),
+    StructField("DeviceVersion", StringType, nullable = true),
+    StructField("SignatureID", StringType, nullable = true),
+    StructField("Name", StringType, nullable = true),
+    StructField("Severity", StringType, nullable = true)
   )
+
+  val headerFields: Vector[String] = headerFieldsSchema.map(_.name.toLowerCase)
 
   private val extensionFields = getExtensionFields
 
@@ -35,13 +37,16 @@ private[cef] case class CefRecordWriter(dataSchema: StructType, writer: OutputSt
    * @return an array containing the extension field names
    */
   private def getExtensionFields: Array[String] = {
-    // Validate that all of the mandatory header fields are available in the schema
-    val requiredFieldCount = dataSchema.fields.count(f => headerFields.contains(f.name.toLowerCase))
-    if (requiredFieldCount != headerFields.length) {
-      throw new UnsupportedOperationException("Row data must contain required CEF fields")
+    // Validate that all of the mandatory header fields are available in the schema with the correct type information
+    val matchedFields = dataSchema
+      .map(f => f -> headerFieldsSchema.indexWhere(h => h.name.compareToIgnoreCase(f.name) == 0 && h.dataType == f.dataType))
+
+    if (matchedFields.count(f => f._2 != -1) != headerFieldsSchema.length) {
+      val headerFieldRequirements = headerFieldsSchema.map(f => s"${f.name}: ${f.dataType.typeName}").mkString("\n")
+      throw new UnsupportedOperationException(s"Schema must contain required CEF fields:\n$headerFieldRequirements")
     }
 
-    dataSchema.fields.filter(f => !headerFields.contains(f.name.toLowerCase)).map(_.name)
+    matchedFields.filter(_._2 == -1).map(_._1.name).toArray[String]
   }
 
   private val dateFormatIsMillis = cefOptions.isDateFormatInMillis
