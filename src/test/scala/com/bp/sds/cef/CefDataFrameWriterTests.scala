@@ -98,7 +98,7 @@ class CefDataFrameWriterTests extends AnyFlatSpec with Matchers with BeforeAndAf
 
   behavior of "Writing a DataFrame to CEF"
 
-  it should "write out data in the expected CEC file format" in {
+  it should "write out data in the expected CEF file format" in {
     val schema = StructType(Array(
       StructField("CEFVersion", StringType, nullable = true),
       StructField("DeviceVendor", StringType, nullable = true),
