@@ -27,10 +27,27 @@ private[cef] case class CefRecordWriter(dataSchema: StructType, writer: OutputSt
     "severity"
   )
 
+  private val extensionFields = getExtensionFields
+
+  /**
+   * Validates the header info of the schema and returns the extension field names
+   *
+   * @return an array containing the extension field names
+   */
+  private def getExtensionFields: Array[String] = {
+    // Validate that all of the mandatory header fields are available in the schema
+    val requiredFieldCount = dataSchema.fields.count(f => headerFields.contains(f.name.toLowerCase))
+    if (requiredFieldCount != headerFields.length) {
+      throw new UnsupportedOperationException("Row data must contain required CEF fields")
+    }
+
+    dataSchema.fields.filter(f => !headerFields.contains(f.name.toLowerCase)).map(_.name)
+  }
+
   private val dateFormatIsMillis = cefOptions.isDateFormatInMillis
 
   private val timestampFormatter = if (dateFormatIsMillis) {
-    TimestampFormatter("MMM dd yyyy HH:mm:ss.SSS zzz", TimeZone.getDefault.toZoneId, isParsing = false)
+    null
   } else {
     TimestampFormatter(cefOptions.dateFormat, TimeZone.getDefault.toZoneId, isParsing = false)
   }
@@ -67,15 +84,9 @@ private[cef] case class CefRecordWriter(dataSchema: StructType, writer: OutputSt
    * @param row an [[InternalRow]] object to write
    */
   def writeRow(row: InternalRow): Unit = {
-    // Validate that all of the mandatory header fields are available in the schema
-    val requiredFieldCount = dataSchema.fields.count(f => headerFields.contains(f.name.toLowerCase))
-    if (requiredFieldCount != headerFields.length) {
-      throw new UnsupportedOperationException("Row data must contain required CEF fields")
-    }
-
     // Split the schema fields into header and extension fields
-    val headerFieldsBuffer = new Array[String](requiredFieldCount)
-    val extensionFieldsBuffer = new Array[String](dataSchema.fields.length - requiredFieldCount)
+    val headerFieldsBuffer = new Array[String](headerFields.length)
+    val extensionFieldsBuffer = new Array[String](extensionFields.length)
 
     // Write each field in the row to the output writer
     var i = 0
@@ -92,7 +103,7 @@ private[cef] case class CefRecordWriter(dataSchema: StructType, writer: OutputSt
       } else if (row.isNullAt(i)) {
         // Where the current field is an extension field and has a null value then output using the user definable
         // null value
-        extensionFieldsBuffer(i - requiredFieldCount) = s"${field.name}=${cefOptions.nullValue}"
+        extensionFieldsBuffer(extensionFields.indexOf(field.name)) = s"${field.name}=${cefOptions.nullValue}"
       } else {
         // Otherwise, write out the extension field, converting the current value into a string representation
         //
@@ -113,7 +124,7 @@ private[cef] case class CefRecordWriter(dataSchema: StructType, writer: OutputSt
           case StringType => sanitizeString(row.getString(i))
           case _ => cefOptions.nullValue
         }
-        extensionFieldsBuffer(i - requiredFieldCount) = s"${field.name}=$fieldValue"
+        extensionFieldsBuffer(extensionFields.indexOf(field.name)) = s"${field.name}=$fieldValue"
       }
 
       i += 1
