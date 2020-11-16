@@ -96,6 +96,30 @@ class CefDataFrameWriterTests extends AnyFlatSpec with Matchers with BeforeAndAf
     unsupportedOperationException.count(_.getMessage.contains("Schema must contain required CEF fields")) should be(1)
   }
 
+  it should "raise an error if the mandatory fields are not of the correct type" in {
+    val schema = StructType(Array(
+      StructField("CEFVersion", StringType, nullable = true),
+      StructField("DeviceVendor", StringType, nullable = true),
+      StructField("DeviceProduct", StringType, nullable = true),
+      StructField("DeviceVersion", StringType, nullable = true),
+      StructField("SignatureID", StringType, nullable = true),
+      StructField("Name", StringType, nullable = true),
+      StructField("Severity", IntegerType, nullable = true)
+    ))
+
+    val data = Seq(
+      Row("CEF:0", "vendor", "product", "version", "sigid", "name", 3)
+    ).asJava
+
+    val df = spark.createDataFrame(data, schema)
+
+    val exception = the[SparkException] thrownBy df.write.mode("overwrite").cef(s"$outputLocation/invalid-schema.log")
+    val unsupportedOperationException = getNestedCauses(exception).filter(_.isInstanceOf[UnsupportedOperationException])
+
+    unsupportedOperationException.length should be >= 1
+    unsupportedOperationException.count(_.getMessage.contains("Schema must contain required CEF fields")) should be(1)
+  }
+
   behavior of "Writing a DataFrame to CEF"
 
   it should "write out data in the expected CEF file format" in {
