@@ -36,13 +36,13 @@ class CefRecordWriterTests extends AnyFlatSpec with Matchers {
     }
   }
 
-  behavior of "Writing records to CEF with invalid configuration"
+  behavior of "Writing records to CEF with invalid data"
 
   it should "raise an error if the header fields contain null values" in {
     val schema = StructType(headerFields)
 
     val data = InternalRow.fromSeq(Seq(
-      UTF8String.fromString("cefversion"),
+      UTF8String.fromString("CEF:0"),
       UTF8String.fromString("vendor"),
       UTF8String.fromString("product"),
       UTF8String.fromString("version"),
@@ -59,13 +59,34 @@ class CefRecordWriterTests extends AnyFlatSpec with Matchers {
     }
   }
 
+  it should "raise an error if the cef version header does not contain the CEF version data" in {
+    val schema = StructType(headerFields)
+
+    val data = InternalRow.fromSeq(Seq(
+      UTF8String.fromString("cef version 0"),
+      UTF8String.fromString("vendor"),
+      UTF8String.fromString("product"),
+      UTF8String.fromString("version"),
+      UTF8String.fromString("sigid"),
+      UTF8String.fromString("name"),
+      UTF8String.fromString("sev")
+    ))
+
+    withOutputStream() { (_, stream) =>
+      val recordWriter = CefRecordWriter(schema, stream, CefParserOptions.from(Map[String, String]()))
+
+      val exception = the[UnsupportedOperationException] thrownBy recordWriter.writeRow(data)
+      exception.getMessage should be("CEFVersion field must end with the CEF version information, e.g. 'CEF:0'")
+    }
+  }
+
   behavior of "Writing a record with date formats"
 
   private def testDateFormatting(format: Option[String], expectedFormattedDate: String): Unit = {
     val schema = StructType(headerFields ++ Seq(StructField("cs1", TimestampType, nullable = true)))
 
     val data = InternalRow.fromSeq(Seq(
-      UTF8String.fromString("cefversion"),
+      UTF8String.fromString("CEF:0"),
       UTF8String.fromString("vendor"),
       UTF8String.fromString("product"),
       UTF8String.fromString("version"),
@@ -85,7 +106,7 @@ class CefRecordWriterTests extends AnyFlatSpec with Matchers {
       stream.flush()
       out.flush()
 
-      out.toString should be(s"cefversion|vendor|product|version|sigid|name|sev|cs1=$expectedFormattedDate")
+      out.toString should be(s"CEF:0|vendor|product|version|sigid|name|sev|cs1=$expectedFormattedDate")
     }
   }
 
@@ -111,7 +132,7 @@ class CefRecordWriterTests extends AnyFlatSpec with Matchers {
     val schema = StructType(headerFields ++ Seq(StructField("cs1", StringType, nullable = true)))
 
     val data = InternalRow.fromSeq(Seq(
-      UTF8String.fromString("cefversion"),
+      UTF8String.fromString("CEF:0"),
       UTF8String.fromString("vendor"),
       UTF8String.fromString("product"),
       UTF8String.fromString("version"),
@@ -127,7 +148,7 @@ class CefRecordWriterTests extends AnyFlatSpec with Matchers {
       stream.flush()
       out.flush()
 
-      out.toString should be("cefversion|vendor|product|version|sigid|name|sev|cs1=cs1value")
+      out.toString should be("CEF:0|vendor|product|version|sigid|name|sev|cs1=cs1value")
     }
   }
 
@@ -141,7 +162,7 @@ class CefRecordWriterTests extends AnyFlatSpec with Matchers {
     ))
 
     val data = InternalRow.fromSeq(Seq(
-      UTF8String.fromString("cefversion"),
+      UTF8String.fromString("CEF:0"),
       UTF8String.fromString("vendor"),
       UTF8String.fromString("product"),
       UTF8String.fromString("version"),
@@ -161,7 +182,7 @@ class CefRecordWriterTests extends AnyFlatSpec with Matchers {
       stream.flush()
       out.flush()
 
-      out.toString should be("cefversion|vendor|product|version|sigid|name|sev|rt=Oct 15 2020 10:17:31.964 UTC cs1=123 cs2=1234567890 cs3=1.234 cs4=3.1415")
+      out.toString should be("CEF:0|vendor|product|version|sigid|name|sev|rt=Oct 15 2020 10:17:31.964 UTC cs1=123 cs2=1234567890 cs3=1.234 cs4=3.1415")
     }
   }
 
@@ -169,7 +190,7 @@ class CefRecordWriterTests extends AnyFlatSpec with Matchers {
     val schema = StructType(headerFields ++ Seq(StructField("cs1", StringType, nullable = true)))
 
     val data = InternalRow.fromSeq(Seq(
-      UTF8String.fromString("cefversion"),
+      UTF8String.fromString("CEF:0"),
       UTF8String.fromString("vendor"),
       UTF8String.fromString("product"),
       UTF8String.fromString("version"),
@@ -185,7 +206,7 @@ class CefRecordWriterTests extends AnyFlatSpec with Matchers {
       stream.flush()
       out.flush()
 
-      out.toString should be("""cefversion|vendor|product|version|sigid|name|sev|cs1=Issue from ip\=127.0.0.01 signature\=abc123\=\=""")
+      out.toString should be("""CEF:0|vendor|product|version|sigid|name|sev|cs1=Issue from ip\=127.0.0.01 signature\=abc123\=\=""")
     }
   }
 
@@ -193,7 +214,7 @@ class CefRecordWriterTests extends AnyFlatSpec with Matchers {
     val schema = StructType(headerFields ++ Seq(StructField("cs1", StringType, nullable = true)))
 
     val data = InternalRow.fromSeq(Seq(
-      UTF8String.fromString("cefversion"),
+      UTF8String.fromString("CEF:0"),
       UTF8String.fromString("vendor"),
       UTF8String.fromString("product"),
       UTF8String.fromString("version"),
@@ -215,7 +236,7 @@ class CefRecordWriterTests extends AnyFlatSpec with Matchers {
       stream.flush()
       out.flush()
 
-      out.toString should be("""cefversion|vendor|product|version|sigid|name|sev|cs1=This\nis\na\nmultiline \\ value\n\nstring\nwhich\=bad""")
+      out.toString should be("""CEF:0|vendor|product|version|sigid|name|sev|cs1=This\nis\na\nmultiline \\ value\n\nstring\nwhich\=bad""")
     }
   }
 
@@ -223,9 +244,9 @@ class CefRecordWriterTests extends AnyFlatSpec with Matchers {
     val schema = StructType(headerFields ++ Seq(StructField("cs1", StringType, nullable = true)))
 
     val data = InternalRow.fromSeq(Seq(
-      UTF8String.fromString("cefversion | id"),
+      UTF8String.fromString("CEF:0"),
       UTF8String.fromString("""vendor \ id"""),
-      UTF8String.fromString("product"),
+      UTF8String.fromString("product | id"),
       UTF8String.fromString("version"),
       UTF8String.fromString("sigid"),
       UTF8String.fromString("name"),
@@ -241,7 +262,7 @@ class CefRecordWriterTests extends AnyFlatSpec with Matchers {
       stream.flush()
       out.flush()
 
-      out.toString should be("""cefversion \| id|vendor \\ id|product|version|sigid|name|sev id 3|cs1=Value""")
+      out.toString should be("""CEF:0|vendor \\ id|product \| id|version|sigid|name|sev id 3|cs1=Value""")
     }
   }
 
@@ -249,7 +270,7 @@ class CefRecordWriterTests extends AnyFlatSpec with Matchers {
     val schema = StructType(headerFields.map(f => StructField(f.name.toLowerCase, f.dataType, f.nullable)))
 
     val data = InternalRow.fromSeq(Seq(
-      UTF8String.fromString("cefversion"),
+      UTF8String.fromString("CEF:0"),
       UTF8String.fromString("vendor"),
       UTF8String.fromString("product"),
       UTF8String.fromString("version"),
@@ -272,7 +293,7 @@ class CefRecordWriterTests extends AnyFlatSpec with Matchers {
     val schema = StructType(headerFields ++ Seq(StructField("cs1", StringType, nullable = true)))
 
     val data = InternalRow.fromSeq(Seq(
-      UTF8String.fromString("cefversion"),
+      UTF8String.fromString("CEF:0"),
       UTF8String.fromString("vendor"),
       UTF8String.fromString("product"),
       UTF8String.fromString("version"),
@@ -288,7 +309,7 @@ class CefRecordWriterTests extends AnyFlatSpec with Matchers {
       stream.flush()
       out.flush()
 
-      out.toString should be("cefversion|vendor|product|version|sigid|name|sev|cs1=NA")
+      out.toString should be("CEF:0|vendor|product|version|sigid|name|sev|cs1=NA")
     }
   }
 
@@ -296,7 +317,7 @@ class CefRecordWriterTests extends AnyFlatSpec with Matchers {
     val schema = StructType((headerFields ++ Seq(StructField("cs1", StringType, nullable = true))).reverse)
 
     val data = InternalRow.fromSeq(Seq(
-      UTF8String.fromString("cefversion"),
+      UTF8String.fromString("CEF:0"),
       UTF8String.fromString("vendor"),
       UTF8String.fromString("product"),
       UTF8String.fromString("version"),
@@ -312,7 +333,71 @@ class CefRecordWriterTests extends AnyFlatSpec with Matchers {
       stream.flush()
       out.flush()
 
-      out.toString should be("cefversion|vendor|product|version|sigid|name|sev|cs1=cs1Value")
+      out.toString should be("CEF:0|vendor|product|version|sigid|name|sev|cs1=cs1Value")
+    }
+  }
+
+  it should "correctly escape values in the header" in {
+    val schema = StructType(headerFields)
+
+    val data = InternalRow.fromSeq(Seq(
+      UTF8String.fromString("CEF:0"),
+      UTF8String.fromString("spaces should not be escaped"),
+      UTF8String.fromString("Backslashes \\ should be escaped"),
+      UTF8String.fromString("Pipes | should be escaped"),
+      UTF8String.fromString("Equal signs = should not be escaped"),
+      UTF8String.fromString("name"),
+      UTF8String.fromString(
+        """multiline
+          |strings
+          |should
+          |be
+          |collapsed""".stripMargin)
+    ))
+
+    withOutputStream() { (out, stream) =>
+      val recordWriter = CefRecordWriter(schema, stream, CefParserOptions.from(Map[String, String]()))
+      recordWriter.writeRow(data)
+      stream.flush()
+      out.flush()
+
+      out.toString should be("""CEF:0|spaces should not be escaped|Backslashes \\ should be escaped|Pipes \| should be escaped|Equal signs = should not be escaped|name|multiline strings should be collapsed|""")
+    }
+  }
+
+  it should "correctly escape values in the extensions" in {
+    val schema = StructType(headerFields ++ Seq(
+      StructField("cs1", StringType, nullable = true),
+      StructField("cs2", StringType, nullable = true),
+      StructField("cs3", StringType, nullable = true),
+      StructField("cs4", StringType, nullable = true)
+    ))
+
+    val data = InternalRow.fromSeq(Seq(
+      UTF8String.fromString("CEF:0"),
+      UTF8String.fromString("vendor"),
+      UTF8String.fromString("product"),
+      UTF8String.fromString("version"),
+      UTF8String.fromString("sigid"),
+      UTF8String.fromString("name"),
+      UTF8String.fromString("sev"),
+      UTF8String.fromString("Pipes | should not be escaped"),
+      UTF8String.fromString("Backslashes \\ should be escaped"),
+      UTF8String.fromString("Equal signs = should be escaped"),
+      UTF8String.fromString(
+        """multiline
+          |strings
+          |should be
+          |escaped""".stripMargin)
+    ))
+
+    withOutputStream() { (out, stream) =>
+      val recordWriter = CefRecordWriter(schema, stream, CefParserOptions.from(Map[String, String]()))
+      recordWriter.writeRow(data)
+      stream.flush()
+      out.flush()
+
+      out.toString should be("""CEF:0|vendor|product|version|sigid|name|sev|cs1=Pipes | should not be escaped cs2=Backslashes \\ should be escaped cs3=Equal signs \= should be escaped cs4=multiline\nstrings\nshould be\nescaped""")
     }
   }
 }

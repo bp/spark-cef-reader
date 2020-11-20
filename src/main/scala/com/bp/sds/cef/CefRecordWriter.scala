@@ -103,8 +103,15 @@ private[cef] case class CefRecordWriter(dataSchema: StructType, writer: OutputSt
         // If the current field is a header field and contains a null value then the current record is invalid
         throw new UnsupportedOperationException("Mandatory fields cannot contain null values")
       } else if (isHeader) {
+        val fieldValue = row.getString(i)
         // Otherwise we can write the header field to the output writer
-        headerFieldsBuffer(headerFields.indexOf(field.name.toLowerCase)) = sanitizeHeaderValue(row.getString(i))
+        if (field.name.compareToIgnoreCase(headerFieldsSchema(0).name) == 0) {
+          // This is the CEF version and so must contain the text "CEF:0", but could start with a syslog message
+          if (!fieldValue.toLowerCase.endsWith("cef:0")) {
+            throw new UnsupportedOperationException("CEFVersion field must end with the CEF version information, e.g. 'CEF:0'")
+          }
+        }
+        headerFieldsBuffer(headerFields.indexOf(field.name.toLowerCase)) = sanitizeHeaderValue(fieldValue)
       } else if (row.isNullAt(i)) {
         // Where the current field is an extension field and has a null value then output using the user definable
         // null value
