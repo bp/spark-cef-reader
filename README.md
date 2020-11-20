@@ -1,7 +1,7 @@
 # Spark CEF Data Source
 
-A custom Spark data source supporting the [Common Event Format](https://support.citrix.com/article/CTX136146) standard
-for logging events.
+A custom Spark data source supporting the [Common Event Format](https://support.citrix.com/article/CTX136146) V25
+standard for logging events.
 
 ## Supported Features
 
@@ -9,7 +9,7 @@ for logging events.
 * Plain text, bzip2, and gzip files supported and tested
 * Field pivoting, for turning `<key>Label` fields into the field names
 * Scanning depth, allowing you to define how many records to scan to infer the schema
-* Built using Spark DataSource v2 APIs
+* Built using Spark DataSource v2 APIs for Spark 3
 * Usage as a source in Spark SQL statements
 
 ## Usage
