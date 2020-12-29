@@ -15,7 +15,8 @@ class CefParserOptionsTests extends AnyFlatSpec with Matchers {
       "pivotFields" -> "true",
       "corruptRecordColumnName" -> "test_col",
       "defensiveMode" -> "true",
-      "nullValue" -> "NA"
+      "nullValue" -> "NA",
+      "dateFormat" -> "millis"
     )
 
     val parserOptions = CefParserOptions.from(inputMap)
@@ -25,6 +26,7 @@ class CefParserOptionsTests extends AnyFlatSpec with Matchers {
     parserOptions.corruptColumnName should be("test_col")
     parserOptions.defensiveMode should be(true)
     parserOptions.nullValue should be("NA")
+    parserOptions.dateFormat should be("millis")
   }
 
   it should "provide default options when values are not provided" in {
@@ -35,6 +37,7 @@ class CefParserOptionsTests extends AnyFlatSpec with Matchers {
     parserOptions.corruptColumnName shouldBe null
     parserOptions.defensiveMode should be(false)
     parserOptions.nullValue should be("-")
+    parserOptions.dateFormat should be("MMM dd yyyy HH:mm:ss.SSS zzz")
   }
 
   it should "show a helpful error if the specified keys are not spelt correctly" in {
@@ -43,7 +46,8 @@ class CefParserOptionsTests extends AnyFlatSpec with Matchers {
       "pivotFeilds" -> "true",
       "coruptRecordColumName" -> "test_col",
       "devensiveMoad" -> "true",
-      "nulVal" -> "NA"
+      "nulVal" -> "NA",
+      "datfrmt" -> "millis"
     )
 
     val exception = the[CefParserOptionsException] thrownBy CefParserOptions.from(inputMap)
@@ -52,6 +56,17 @@ class CefParserOptionsTests extends AnyFlatSpec with Matchers {
     exception.getMessage.contains("Unable to find option 'coruptRecordColumName', did you mean 'corruptRecordColumnName'") should be(true)
     exception.getMessage.contains("Unable to find option 'devensiveMoad', did you mean 'defensiveMode'") should be(true)
     exception.getMessage.contains("Unable to find option 'nulVal', did you mean 'nullValue'") should be(true)
+    exception.getMessage.contains("Unable to find option 'datfrmt', did you mean 'dateFormat'") should be(true)
+  }
+
+  it should "throw an error if an invalid date format is provided" in {
+    val inputMap = Map[String, String](
+      "dateFormat" -> "yyyy-MM-dd HH:mm:ss.SSS zzz"
+    )
+
+    val exception = the[CefParserOptionsException] thrownBy CefParserOptions.from(inputMap)
+
+    exception.getMessage.contains("Unable to parse date format 'yyyy-MM-dd HH:mm:ss.SSS zzz', valid options are") should be(true)
   }
 
   behavior of "Parsing a string map"
@@ -62,7 +77,8 @@ class CefParserOptionsTests extends AnyFlatSpec with Matchers {
       "pivotFields" -> "true",
       "corruptRecordColumnName" -> "test_col",
       "defensiveMode" -> "true",
-      "nullValue" -> "NA"
+      "nullValue" -> "NA",
+      "dateFormat" -> "millis"
     )
 
     val inputMap = new CaseInsensitiveStringMap(originalMap.asJava)
@@ -74,6 +90,7 @@ class CefParserOptionsTests extends AnyFlatSpec with Matchers {
     parserOptions.corruptColumnName should be("test_col")
     parserOptions.defensiveMode should be(true)
     parserOptions.nullValue should be("NA")
+    parserOptions.dateFormat should be("millis")
   }
 
   it should "provide default options when values are not provided" in {
@@ -85,6 +102,7 @@ class CefParserOptionsTests extends AnyFlatSpec with Matchers {
     parserOptions.corruptColumnName shouldBe null
     parserOptions.defensiveMode should be(false)
     parserOptions.nullValue should be("-")
+    parserOptions.dateFormat should be("MMM dd yyyy HH:mm:ss.SSS zzz")
   }
 
   it should "show a helpful error if the specified keys are not spelt correctly" in {
@@ -93,17 +111,30 @@ class CefParserOptionsTests extends AnyFlatSpec with Matchers {
       "pivotFeilds" -> "true",
       "coruptRecordColumName" -> "test_col",
       "devensiveMoad" -> "true",
-      "nulVal" -> "NA"
+      "nulVal" -> "NA",
+      "datfrmt" -> "millis"
     )
 
     val inputMap = new CaseInsensitiveStringMap(originalMap.asJava)
 
     val exception = the[CefParserOptionsException] thrownBy CefParserOptions.from(inputMap)
-    println(exception.getMessage)
     exception.getMessage.contains("Unable to find option 'macsrexord', did you mean 'maxRecords") should be(true)
     exception.getMessage.contains("Unable to find option 'pivotfeilds', did you mean 'pivotFields") should be(true)
     exception.getMessage.contains("Unable to find option 'coruptrecordcolumname', did you mean 'corruptRecordColumnName") should be(true)
     exception.getMessage.contains("Unable to find option 'devensivemoad', did you mean 'defensiveMode'") should be(true)
     exception.getMessage.contains("Unable to find option 'nulval', did you mean 'nullValue'") should be(true)
+    exception.getMessage.contains("Unable to find option 'datfrmt', did you mean 'dateFormat'") should be(true)
+  }
+
+  it should "throw an error if an invalid date format is provided" in {
+    val originalMap = Map[String, String](
+      "dateFormat" -> "yyyy-MM-dd HH:mm:ss.SSS zzz"
+    )
+
+    val inputMap = new CaseInsensitiveStringMap(originalMap.asJava)
+
+    val exception = the[CefParserOptionsException] thrownBy CefParserOptions.from(inputMap)
+
+    exception.getMessage.contains("Unable to parse date format 'yyyy-MM-dd HH:mm:ss.SSS zzz', valid options are") should be(true)
   }
 }

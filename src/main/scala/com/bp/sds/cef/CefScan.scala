@@ -25,7 +25,7 @@ private[cef] case class CefScan(
   private val optionsAsScala = options.asScala.toMap
   private val cefOptions = CefParserOptions.from(options)
 
-  override def isSplitable(path: Path): Boolean = false
+  override def isSplitable(path: Path): Boolean = super.isSplitable(path)
 
   override def withFilters(partitionFilters: Seq[Expression], dataFilters: Seq[Expression]): FileScan =
     this.copy(partitionFilters = partitionFilters, dataFilters = dataFilters)

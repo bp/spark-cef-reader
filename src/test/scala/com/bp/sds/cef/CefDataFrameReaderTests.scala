@@ -14,7 +14,7 @@ import org.scalatest.BeforeAndAfterAll
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
-class CefDataSourceTests extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
+class CefDataFrameReaderTests extends AnyFlatSpec with Matchers with BeforeAndAfterAll {
   TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
 
   lazy val spark: SparkSession = SparkSession.builder()

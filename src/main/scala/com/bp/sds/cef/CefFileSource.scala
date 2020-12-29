@@ -13,7 +13,8 @@ import org.apache.spark.util.SerializableConfiguration
 private[cef] class CefFileSource extends TextBasedFileFormat with DataSourceRegister {
   override def shortName(): String = "cef"
 
-  override def isSplitable(sparkSession: SparkSession, options: Map[String, String], path: Path): Boolean = false
+  override def isSplitable(sparkSession: SparkSession, options: Map[String, String], path: Path): Boolean =
+    super.isSplitable(sparkSession, options, path)
 
   override def inferSchema(sparkSession: SparkSession, options: Map[String, String], files: Seq[FileStatus]): Option[StructType] = {
     if (files.isEmpty) return None
@@ -28,13 +29,12 @@ private[cef] class CefFileSource extends TextBasedFileFormat with DataSourceRegi
       sparkSession.sparkContext.broadcast(new SerializableConfiguration(hadoopConf))
 
     (file: PartitionedFile) => {
-      val path = new Path(file.filePath)
-
-      new CefDataIterator(broadcastHadoopConf.value.value, path, dataSchema, requiredSchema, CefParserOptions.from(options))
+      new CefDataIterator(broadcastHadoopConf.value.value, file, dataSchema, requiredSchema, CefParserOptions.from(options))
     }
   }
 
-  override def prepareWrite(sparkSession: SparkSession, job: Job, options: Map[String, String], dataSchema: StructType): OutputWriterFactory = throw new RuntimeException("No write support")
+  override def prepareWrite(sparkSession: SparkSession, job: Job, options: Map[String, String], dataSchema: StructType): OutputWriterFactory =
+    new CefOutputWriterFactory(options)
 }
 
 
