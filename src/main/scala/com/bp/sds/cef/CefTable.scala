@@ -48,9 +48,3 @@ private[cef] class CefTable(
 
   override def fallbackFileFormat: Class[_ <: FileFormat] = classOf[CefFileSource]
 }
-
-
-
-
-
-
