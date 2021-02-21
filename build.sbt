@@ -5,7 +5,7 @@ val sparkVersion = settingKey[String]("Spark version")
 val scalaTestVersion = settingKey[String]("ScalaTest version")
 
 name := "spark-cef-reader"
-version := "0.1-SNAPSHOT"
+version := "0.2-SNAPSHOT"
 organization := "com.bp"
 description := "CEF data source for Spark"
 homepage := Some(url("https://github.com/bp"))
@@ -13,6 +13,8 @@ developers ++= List(
   Developer(id = "dazfuller", name = "Darren Fuller", email = "darren@elastacloud.com", url = url("https://github.com/elastacloud")),
   Developer(id = "azurecoder", name = "Richard Conway", email = "richard@elastacloud.com", url = url("https://github.com/elastacloud"))
 )
+
+target := file("target") / s"spark-${sparkVersion.value}"
 
 artifactName := { (sv: ScalaVersion, module: ModuleID, artifact: Artifact) =>
   s"${artifact.name}-${sv.binary}_${sparkVersion.value}-${module.revision}.${artifact.extension}"
@@ -34,7 +36,7 @@ libraryDependencies ++= Seq(
 
 // Define common settings for the library
 val commonSettings = Seq(
-  sparkVersion := System.getProperty("sparkVersion", "3.0.1"),
+  sparkVersion := System.getProperty("sparkVersion", "3.0.2"),
   scalaVersion := {
     if (sparkVersion.value < "3.0.0") {
       "2.11.12"
