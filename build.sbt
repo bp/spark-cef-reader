@@ -36,7 +36,7 @@ libraryDependencies ++= Seq(
 
 // Define common settings for the library
 val commonSettings = Seq(
-  sparkVersion := System.getProperty("sparkVersion", "3.0.2"),
+  sparkVersion := System.getProperty("sparkVersion", "3.1.1"),
   scalaVersion := {
     if (sparkVersion.value < "3.0.0") {
       "2.11.12"

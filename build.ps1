@@ -1,4 +1,4 @@
-$versions = @("3.0.1", "3.0.2")
+$versions = @("3.0.1", "3.0.2", "3.1.1")
 $jarPath = "./target/jars"
 
 Write-Host "Clearing existing jar artefacts" -ForegroundColor Green
