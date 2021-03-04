@@ -5,7 +5,7 @@ val sparkVersion = settingKey[String]("Spark version")
 val scalaTestVersion = settingKey[String]("ScalaTest version")
 
 name := "spark-cef-reader"
-version := "0.2"
+version := "0.3-SNAPSHOT"
 organization := "com.bp"
 description := "CEF data source for Spark"
 homepage := Some(url("https://github.com/bp"))
