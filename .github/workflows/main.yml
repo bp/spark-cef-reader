@@ -5,6 +5,7 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -23,10 +24,11 @@ jobs:
       with:
         java-version: 1.8
     
-    - name: Clean, build, and package
+    - name: Test and package
       run: sbt -DsparkVersion="${{ matrix.spark-version }}" clean compile test package
     
     - name: Upload the package
       uses: actions/upload-artifact@v2.2.0
       with:
         path: ./target/**/spark-cef-reader*.jar
+        if-no-files-found: warn
