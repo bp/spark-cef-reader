@@ -21,19 +21,66 @@ class CefRecordParserTests extends AnyFlatSpec with Matchers with BeforeAndAfter
     SparkSession.clearDefaultSession()
   }
 
+  private val headerFields = Array(
+    StructField("CEFVersion", StringType, nullable = true),
+    StructField("DeviceVendor", StringType, nullable = true),
+    StructField("DeviceProduct", StringType, nullable = true),
+    StructField("DeviceVersion", StringType, nullable = true),
+    StructField("SignatureID", StringType, nullable = true),
+    StructField("Name", StringType, nullable = true),
+    StructField("Severity", StringType, nullable = true)
+  )
+
+  behavior of "Parsing records with an invalid number of records"
+
+  it should "throw an error if the device vendor is missing" in {
+    val recordParser = new CefRecordParser(CefParserOptions())
+
+    val error = the [CefRecordParserException] thrownBy recordParser.parse("CEF:0", headerFields)
+    error.getMessage.contains("Missing device vendor in record") should be(true)
+  }
+
+  it should "throw an error if the device product is missing" in {
+    val recordParser = new CefRecordParser(CefParserOptions())
+
+    val error = the [CefRecordParserException] thrownBy recordParser.parse("CEF:0|vendor", headerFields)
+    error.getMessage.contains("Missing device product in record") should be(true)
+  }
+
+  it should "throw an error if the device version is missing" in {
+    val recordParser = new CefRecordParser(CefParserOptions())
+
+    val error = the [CefRecordParserException] thrownBy recordParser.parse("CEF:0|vendor|product", headerFields)
+    error.getMessage.contains("Missing device version in record") should be(true)
+  }
+
+  it should "throw an error if the signature is missing" in {
+    val recordParser = new CefRecordParser(CefParserOptions())
+
+    val error = the [CefRecordParserException] thrownBy recordParser.parse("CEF:0|vendor|product|version", headerFields)
+    error.getMessage.contains("Missing signature id in record") should be(true)
+  }
+
+  it should "throw an error if the name is missing" in {
+    val recordParser = new CefRecordParser(CefParserOptions())
+
+    val error = the [CefRecordParserException] thrownBy recordParser.parse("CEF:0|vendor|product|version|sig", headerFields)
+    error.getMessage.contains("Missing name in record") should be(true)
+  }
+
+  it should "throw an error if the severity is missing" in {
+    val recordParser = new CefRecordParser(CefParserOptions())
+
+    val error = the [CefRecordParserException] thrownBy recordParser.parse("CEF:0|vendor|product|version|sig|name", headerFields)
+    error.getMessage.contains("Missing severity in record") should be(true)
+  }
+
   behavior of "Parsing a single record"
 
   it should "correctly extract data from an imperva access event" in {
     val recordSource = ResourceFileUtils.getFileContent("/cef-records/type-tests.cef").split("\n")
 
-    val fields = Array(
-      StructField("CEFVersion", StringType, nullable = true),
-      StructField("DeviceVendor", StringType, nullable = true),
-      StructField("DeviceProduct", StringType, nullable = true),
-      StructField("DeviceVersion", StringType, nullable = true),
-      StructField("SignatureID", StringType, nullable = true),
-      StructField("Name", StringType, nullable = true),
-      StructField("Severity", StringType, nullable = true),
+    val fields = headerFields ++ Array(
       StructField("eventId", LongType, nullable = true),
       StructField("cn1", LongType, nullable = true),
       StructField("cfp1", FloatType, nullable = true)
