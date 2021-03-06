@@ -42,6 +42,7 @@ class CefDataFrameReaderTests extends AnyFlatSpec with Matchers with BeforeAndAf
 
     try {
       df.count() should be(4)
+      df.filter($"CEFVersion".isNull).count() should be(0)
       df.filter($"act" === "not blocked").count() should be(2)
       df.filter($"act" === "transformed").count() should be(2)
       df.filter(substring($"msg", 0, 1) === " ").count() should be(0)
@@ -372,6 +373,8 @@ class CefDataFrameReaderTests extends AnyFlatSpec with Matchers with BeforeAndAf
       .option("mode", "permissive")
       .option("corruptRecordColumnName", "_corrupt_record")
       .cef(sourceFile)
+
+    df.show()
 
     df.filter($"_corrupt_record".isNotNull).count() should be(1)
   }
