@@ -3,6 +3,8 @@
 A custom Spark data source supporting the [Common Event Format](https://support.citrix.com/article/CTX136146) V25
 standard for logging events.
 
+[![Spark library CI](https://github.com/bp/spark-cef-reader/actions/workflows/main.yml/badge.svg)](https://github.com/bp/spark-cef-reader/actions/workflows/main.yml)
+
 ## Supported Features
 
 * Schema inference. Uses data types for known extensions.
