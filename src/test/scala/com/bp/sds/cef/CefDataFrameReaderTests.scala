@@ -398,7 +398,18 @@ class CefDataFrameReaderTests extends AnyFlatSpec with Matchers with BeforeAndAf
       .cef(sourceFile)
 
     val error = the[SparkException] thrownBy df.show()
-    error.getMessage.contains("org.apache.spark.SparkException: Invalid rows detected") should be(true)
+    error.getMessage.contains("com.bp.sds.cef.CefRecordParserException: Missing") should be(true)
+  }
+
+  it should "Drop malformed records in drop-malformed mode" in {
+    val sourceFile = ResourceFileUtils.getFilePath("/cef-records/corrupt-required-fields.cef")
+
+    val df = spark.read
+      .option("maxRecords", 1) // Only read the first record otherwise this will fail during schema inference
+      .option("mode", "dropmalformed")
+      .cef(sourceFile)
+
+    df.count() should be(2)
   }
 
 }

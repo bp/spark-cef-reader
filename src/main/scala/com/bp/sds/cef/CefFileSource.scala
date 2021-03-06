@@ -29,7 +29,8 @@ private[cef] class CefFileSource extends TextBasedFileFormat with DataSourceRegi
       sparkSession.sparkContext.broadcast(new SerializableConfiguration(hadoopConf))
 
     (file: PartitionedFile) => {
-      new CefDataIterator(broadcastHadoopConf.value.value, file, dataSchema, requiredSchema, CefParserOptions.from(options))
+      val iterator = new CefDataIterator(CefParserOptions.from(options))
+      iterator.readFile(broadcastHadoopConf.value.value, file, requiredSchema)
     }
   }
 
