@@ -44,5 +44,5 @@ val commonSettings = Seq(
       "2.12.10"
     }
   },
-  scalaTestVersion := "3.2.2"
+  scalaTestVersion := "3.2.5"
 )
