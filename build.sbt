@@ -26,8 +26,8 @@ libraryDependencies ++= Seq(
 )
 
 // Setup test dependencies and configuration
-parallelExecution in Test := false
-fork in Test := true
+Test / parallelExecution := false
+Test / fork := true
 
 libraryDependencies ++= Seq(
   "org.scalactic" %% "scalactic" % scalaTestVersion.value % Test,
@@ -44,5 +44,5 @@ val commonSettings = Seq(
       "2.12.10"
     }
   },
-  scalaTestVersion := "3.2.5"
+  scalaTestVersion := "3.2.9"
 )
