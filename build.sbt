@@ -26,8 +26,8 @@ libraryDependencies ++= Seq(
 )
 
 // Setup test dependencies and configuration
-parallelExecution in Test := false
-fork in Test := true
+Test / parallelExecution := false
+Test / fork := true
 
 libraryDependencies ++= Seq(
   "org.scalactic" %% "scalactic" % scalaTestVersion.value % Test,
@@ -36,7 +36,7 @@ libraryDependencies ++= Seq(
 
 // Define common settings for the library
 val commonSettings = Seq(
-  sparkVersion := System.getProperty("sparkVersion", "3.1.1"),
+  sparkVersion := System.getProperty("sparkVersion", "3.1.2"),
   scalaVersion := {
     if (sparkVersion.value < "3.0.0") {
       "2.11.12"
@@ -44,5 +44,5 @@ val commonSettings = Seq(
       "2.12.10"
     }
   },
-  scalaTestVersion := "3.2.5"
+  scalaTestVersion := "3.2.9"
 )
