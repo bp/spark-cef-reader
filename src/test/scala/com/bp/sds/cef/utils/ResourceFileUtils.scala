@@ -1,5 +1,6 @@
 package com.bp.sds.cef.utils
 
+import java.net.URLDecoder
 import scala.io.{BufferedSource, Source}
 
 object ResourceFileUtils {
@@ -28,7 +29,7 @@ object ResourceFileUtils {
    * @return a full path name of the requested file
    */
   def getFilePath(relativePath: String): String = {
-    getClass.getResource(relativePath).getPath
-      .replace("%20", " ") // Replace spaces in the name at this stage so as to not confuse the test case
+    val path = getClass.getResource(relativePath).getPath
+    URLDecoder.decode(path, "utf8")
   }
 }
