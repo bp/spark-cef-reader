@@ -382,8 +382,6 @@ class CefDataFrameReaderTests extends AnyFlatSpec with Matchers with BeforeAndAf
       .option("corruptRecordColumnName", "_corrupt_record")
       .cef(sourceFile)
 
-    df.show()
-
     df.filter($"_corrupt_record".isNotNull).count() should be(1)
   }
 
