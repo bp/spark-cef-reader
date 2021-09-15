@@ -15,6 +15,19 @@
  * limitations under the License.
  */
 
+/*
+ * NOTICE:
+ * This file has been reproduced from the Apache Spark source code file
+ * org.apache.spark.sql.catalyst.util.FailureSafeParser
+ *
+ * The original file is available at:
+ * https://github.com/apache/spark
+ *
+ * This file has been reproduced to work around an issue whereby the
+ * Databricks platform has modified the original and introduced changes
+ * which are not backwards compatible.
+ */
+
 package com.bp.sds.cef
 
 import org.apache.spark.SparkException
