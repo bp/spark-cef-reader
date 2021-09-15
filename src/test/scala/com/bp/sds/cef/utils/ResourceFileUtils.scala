@@ -20,6 +20,7 @@ object ResourceFileUtils {
 
   def getFilePath(relativePath: String): String = {
     getClass.getResource(relativePath).getPath
+      .replace("%20", " ")  // Replace spaces in the name at this stage so as to not confuse the test case
   }
 
   def getResourceRoot: URI = {
