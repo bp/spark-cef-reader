@@ -8,7 +8,9 @@ name := "spark-cef-reader"
 version := "0.4-SNAPSHOT"
 organization := "com.bp"
 description := "CEF data source for Spark"
-homepage := Some(url("https://github.com/bp"))
+homepage := Some(url("https://github.com/bp/spark-cef-reader"))
+licenses += ("Apache License, Version 2.0", url("https://www.apache.org/licenses/LICENSE-2.0"))
+scmInfo := Some(ScmInfo(url("https://github.com/bp/spark-cef-reader"), "https://github.com/bp/spark-cef-reader.git"))
 developers ++= List(
   Developer(id = "dazfuller", name = "Darren Fuller", email = "darren@elastacloud.com", url = url("https://github.com/elastacloud")),
   Developer(id = "azurecoder", name = "Richard Conway", email = "richard@elastacloud.com", url = url("https://github.com/elastacloud"))
@@ -44,5 +46,5 @@ val commonSettings = Seq(
       "2.12.10"
     }
   },
-  scalaTestVersion := "3.2.9"
+  scalaTestVersion := "3.2.10"
 )
