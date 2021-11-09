@@ -25,6 +25,14 @@ libraryDependencies ++= Seq(
   "org.apache.spark" %% "spark-core" % sparkVersion.value % Provided,
 )
 
+Compile / unmanagedSourceDirectories ++= {
+  if (sparkVersion.value < "3.2.0") {
+    Seq(baseDirectory.value / "src/main/3.0/scala")
+  } else {
+    Seq(baseDirectory.value / "src/main/3.2/scala")
+  }
+}
+
 // Setup test dependencies and configuration
 Test / parallelExecution := false
 Test / fork := true
@@ -38,11 +46,11 @@ libraryDependencies ++= Seq(
 val commonSettings = Seq(
   sparkVersion := System.getProperty("sparkVersion", "3.1.2"),
   scalaVersion := {
-    if (sparkVersion.value < "3.0.0") {
-      "2.11.12"
+    if (sparkVersion.value >= "3.2.0") {
+      "2.12.14"
     } else {
       "2.12.10"
     }
   },
-  scalaTestVersion := "3.2.9"
+  scalaTestVersion := "3.2.10"
 )
