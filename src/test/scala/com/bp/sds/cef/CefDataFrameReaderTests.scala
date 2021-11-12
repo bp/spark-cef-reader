@@ -209,6 +209,14 @@ class CefDataFrameReaderTests extends AnyFlatSpec with Matchers with BeforeAndAf
     df.select("severity_1").head.getString(0) should be("1")
   }
 
+  it should "handle paths with spaces in the name" in {
+    val sourceFile = ResourceFileUtils.getFilePath("/cef-records/citrix events spaces in name.cef")
+
+    val df = spark.read.cef(sourceFile)
+
+    df.count() should be(4)
+  }
+
   behavior of "Reading files with value label pairs"
 
   it should "read the pairs as separate columns by default" in {
@@ -373,8 +381,6 @@ class CefDataFrameReaderTests extends AnyFlatSpec with Matchers with BeforeAndAf
       .option("mode", "permissive")
       .option("corruptRecordColumnName", "_corrupt_record")
       .cef(sourceFile)
-
-    df.show()
 
     df.filter($"_corrupt_record".isNotNull).count() should be(1)
   }
