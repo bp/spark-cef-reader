@@ -1,0 +1,23 @@
+trigger:
+- main
+
+pool: 'stratus-build-pool.u'
+
+variables:
+  tag: '$(Build.BuildId)'
+  branch: '$(Build.SourceBranchName)'
+  sparkVersion: '3.2.0'
+
+steps:
+
+- script: |
+    cd $(Build.SourcesDirectory) && sbt clean compile package -DsparkVersion="$(sparkVersion)"
+    whoami
+    ls $(Build.SourcesDirectory)/target/spark-$(sparkVersion)/scala-2.12/
+  displayName: 'Build and package scala artifact.'
+
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: $(Build.SourcesDirectory)/target/spark-$(sparkVersion)/scala-2.12/spark-cef-reader-2.12_$(sparkVersion)-0.4-SNAPSHOT.jar
+    artifactName: spark-cef-reader
+  displayName: 'Publish pipeline build artifact.'
