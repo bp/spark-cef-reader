@@ -9,9 +9,7 @@ variables:
   branch: '$(Build.SourceBranchName)'
   sparkVersion: '3.2.0'
 
-
 pool: 'stratus-build-pool.u'
-
 
 stages:
   - stage: Build_and_Publish_Maven_and_Python_Artifact
