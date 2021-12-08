@@ -7,7 +7,6 @@ trigger:
 variables:
   tag: '$(Build.BuildId)'
   branch: '$(Build.SourceBranchName)'
-  sparkVersion: '3.2.0'
 
 pool: 'stratus-build-pool.u'
 
