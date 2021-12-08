@@ -12,8 +12,6 @@ steps:
 
 - script: |
     cd $(Build.SourcesDirectory) && sbt clean compile package -DsparkVersion="$(sparkVersion)"
-    whoami
-    ls $(Build.SourcesDirectory)/target/spark-$(sparkVersion)/scala-2.12/
   displayName: 'Build and package scala artifact.'
 
 - task: PublishPipelineArtifact@1
