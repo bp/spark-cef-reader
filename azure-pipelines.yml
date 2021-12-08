@@ -12,7 +12,7 @@ variables:
 pool: 'stratus-build-pool.u'
 
 stages:
-  - stage: Build_and_Publish_Maven_and_Python_Artifact
+  - stage: Build_and_Publish_MavenArtifact
     jobs:
       - job: BuildPublishMavenArtifact
         steps:
