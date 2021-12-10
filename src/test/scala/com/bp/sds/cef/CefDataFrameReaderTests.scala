@@ -22,6 +22,10 @@ class CefDataFrameReaderTests extends AnyFlatSpec with Matchers with BeforeAndAf
     .master("local[2]")
     .getOrCreate()
 
+  override def beforeAll(): Unit = {
+    spark.sparkContext.setLogLevel("WARN")
+  }
+
   override def afterAll(): Unit = {
     spark.close()
 

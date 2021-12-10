@@ -41,6 +41,7 @@ class CefDataFrameWriterTests extends AnyFlatSpec with Matchers with BeforeAndAf
 
   override def beforeAll(): Unit = {
     deleteRecursively(new File(outputLocation))
+    spark.sparkContext.setLogLevel("WARN")
   }
 
   override def afterAll(): Unit = {
