@@ -1,17 +1,5 @@
 /.bloop/**
-/.idea/**
-/.metals/**
-/.settings/**
 /.vscode/**
-/target/**
-/project/**
-/spark-warehouse/**
-/src/test/data/mp/pcaptroll/**/*
-/src/test/data/mp/writter/**/*
-.classpath
-.project
-/**/zst
-additional-jars
 
 # Created by https://www.gitignore.io/api/scala,spark,intellij
 # Edit at https://www.gitignore.io/?templates=scala,spark,intellij
