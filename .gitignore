@@ -1,3 +1,6 @@
+/.bloop/**
+/.vscode/**
+
 # Created by https://www.gitignore.io/api/scala,spark,intellij
 # Edit at https://www.gitignore.io/?templates=scala,spark,intellij
 
