@@ -27,9 +27,6 @@ private[cef] case class CefScan(
 
   override def isSplitable(path: Path): Boolean = super.isSplitable(path)
 
-  override def withFilters(partitionFilters: Seq[Expression], dataFilters: Seq[Expression]): FileScan =
-    this.copy(partitionFilters = partitionFilters, dataFilters = dataFilters)
-
   override def createReaderFactory(): PartitionReaderFactory = {
     val hadoopConf = sparkSession.sessionState.newHadoopConfWithOptions(optionsAsScala)
     val broadcastConf = sparkSession.sparkContext.broadcast(new SerializableConfiguration(hadoopConf))

@@ -46,13 +46,13 @@
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-sql_2.12</artifactId>
-            <version>3.2.1</version>
+            <version>3.3.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-core_2.12</artifactId>
-            <version>3.2.1</version>
+            <version>3.3.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -131,5 +131,5 @@
           </configuration>
         </plugin>
       </plugins>
-    </build>    
+    </build>
 </project>
