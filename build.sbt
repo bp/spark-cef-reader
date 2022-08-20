@@ -30,8 +30,10 @@ libraryDependencies ++= Seq(
 Compile / unmanagedSourceDirectories ++= {
   if (sparkVersion.value < "3.2.0") {
     Seq(baseDirectory.value / "src/main/3.0/scala")
-  } else {
+  } else if (sparkVersion.value < "3.3.0") {
     Seq(baseDirectory.value / "src/main/3.2/scala")
+  } else {
+    Seq(baseDirectory.value / "src/main/3.3/scala")
   }
 }
 
@@ -46,7 +48,7 @@ libraryDependencies ++= Seq(
 
 // Define common settings for the library
 val commonSettings = Seq(
-  sparkVersion := System.getProperty("sparkVersion", "3.2.0"),
+  sparkVersion := System.getProperty("sparkVersion", "3.3.0"),
   scalaVersion := {
     if (sparkVersion.value >= "3.2.0") {
       "2.12.14"
@@ -54,5 +56,5 @@ val commonSettings = Seq(
       "2.12.10"
     }
   },
-  scalaTestVersion := "3.2.10"
+  scalaTestVersion := "3.2.13"
 )
