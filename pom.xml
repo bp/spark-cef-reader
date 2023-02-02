@@ -6,7 +6,7 @@
     <packaging>jar</packaging>
     <description>CEF data source for Spark</description>
     <url>https://github.com/bp/spark-cef-reader</url>
-    <version>0.5-SNAPSHOT</version>
+    <version>0.6-SNAPSHOT</version>
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
